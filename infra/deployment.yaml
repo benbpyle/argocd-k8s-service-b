@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-b-deployment
+  #  namespace: rust-service-namespace
+  #labels:
+  #  app: service-c
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-b
+  template:
+    metadata:
+      labels:
+        app: service-b
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+                      - arm64
+      containers:
+        - name: rust-service-c
+          image: public.ecr.aws/f8u4w2p3/rust-service-b:latest
+          ports:
+            - name: http
+              containerPort: 3000
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: BIND_ADDRESS
+              value: "0.0.0.0:3000"
+            - name: DD_TRACING_ENABLED
+              value: "false"
+      nodeSelector:
+        kubernetes.io/os: linux
