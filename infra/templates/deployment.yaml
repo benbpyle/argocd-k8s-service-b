@@ -46,7 +46,7 @@ spec:
             - name: "DD_TRACING_ENABLED"
               value: "false"
             - name: SERVICE_A_URL
-              value: "service-a.payload-changer.svc.cluster.local:3000"
+              value: "http://service-a:3000"
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
